@@ -35,3 +35,14 @@ data/processed/*
 # Keep documentation files
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# MLflow
+mlruns/
+mlflow.db
+mlflow.db-journal
+mlartifacts/
+
+# Model artifacts
+artifacts/*
+!artifacts/.gitkeep
+!artifacts/inactivity_risk_model.joblib

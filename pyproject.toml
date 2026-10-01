@@ -17,11 +17,15 @@ dependencies = [
     "numpy",
     "scikit-learn",
     "openpyxl",
+    "joblib",
+    "fastapi",
+    "uvicorn",
 ]
 [project.optional-dependencies]
 dev = [
     "pytest",
     "ruff",
+    "httpx",
 ]
 
 [tool.setuptools.packages.find]
