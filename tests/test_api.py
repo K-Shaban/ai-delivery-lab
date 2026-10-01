@@ -1,3 +1,4 @@
+import numpy as np
 from fastapi.testclient import TestClient
 
 from ai_delivery_lab.api import app
@@ -13,7 +14,23 @@ def test_health():
     assert response.json() == {"status": "ok"}
 
 
-def test_predict():
+def test_predict(monkeypatch):
+    class FakeModel:
+        def __init__(self, probability):
+            self.probability = probability
+
+        def predict_proba(self, customer):
+            return np.array([[1 - self.probability, self.probability]])
+
+    monkeypatch.setattr(
+        "ai_delivery_lab.predict.load_models",
+        lambda: {
+            "logistic": FakeModel(0.60),
+            "random_forest": FakeModel(0.70),
+            "gradient_boosting": FakeModel(0.80),
+        },
+    )
+
     payload = {
         "Recency": 10,
         "Frequency": 5,

@@ -1,9 +1,27 @@
 import pandas as pd
+import numpy as np
+import pytest
 
 from ai_delivery_lab.predict import predict_inactivity_risk
 
 
-def test_predict_inactivity_risk():
+def test_predict_inactivity_risk(monkeypatch):
+    class FakeModel:
+        def __init__(self, probability):
+            self.probability = probability
+
+        def predict_proba(self, customer):
+            return np.array([[1 - self.probability, self.probability]])
+
+    monkeypatch.setattr(
+        "ai_delivery_lab.predict.load_models",
+        lambda: {
+            "logistic": FakeModel(0.60),
+            "random_forest": FakeModel(0.70),
+            "gradient_boosting": FakeModel(0.80),
+        },
+    )
+
     customer = pd.DataFrame(
         {
             "Recency": [10],
@@ -22,4 +40,4 @@ def test_predict_inactivity_risk():
     assert "risk_probability" in result.columns
 
     assert result["at_risk"].iloc[0] in [0, 1]
-    assert 0 <= result["risk_probability"].iloc[0] <= 1
+    assert result["risk_probability"].iloc[0] == pytest.approx(0.70)
