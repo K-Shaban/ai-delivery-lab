@@ -5,6 +5,7 @@
   "cpu": "1024",
   "memory": "2048",
   "executionRoleArn": "arn:aws:iam::200978365775:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::200978365775:role/aiDeliveryLabTaskRole",
   "containerDefinitions": [
     {
       "name": "ai-delivery-lab",

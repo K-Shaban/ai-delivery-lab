@@ -1,0 +1,13 @@
+# AWS account configuration
+#
+# Populate these values using:
+#   aws sts get-caller-identity
+#
+# Save this file as aws-config.yaml after populating it.
+# Keep aws-config.yaml gitignored.
+
+aws:
+  region: ap-southeast-2
+  account_id: "<AWS_ACCOUNT_ID>"
+  user_id: "<AWS_USER_ID>"
+  arn: "arn:aws:iam::<AWS_ACCOUNT_ID>:root"

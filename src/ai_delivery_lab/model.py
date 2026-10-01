@@ -4,7 +4,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 
 NUMERIC_FEATURES = [
     "Recency",
@@ -73,6 +73,22 @@ def build_random_forest_model() -> Pipeline:
         ]
     )
 
+def build_gradient_boosting_model() -> Pipeline:
+    """Build the Gradient Boosting candidate model."""
+    return Pipeline(
+        steps=[
+            ("preprocessor", build_preprocessor()),
+            (
+                "classifier",
+                GradientBoostingClassifier(
+                    n_estimators=100,
+                    learning_rate=0.1,
+                    max_depth=3,
+                    random_state=42,
+                ),
+            ),
+        ]
+    )
 
 # Backwards-compatible name for the existing baseline code.
 def build_model() -> Pipeline:

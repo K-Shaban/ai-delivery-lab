@@ -20,6 +20,7 @@ dependencies = [
     "joblib",
     "fastapi",
     "uvicorn",
+    "boto3[crt]",
 ]
 [project.optional-dependencies]
 dev = [

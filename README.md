@@ -10,13 +10,13 @@ The challenge is turning historical transaction data into an operational signal 
 
 > **Which customers are showing signs of inactivity, and how likely are they to become inactive?**
 
-This project develops a data and AI solution for that problem, taking the process from raw transaction data through customer-level risk modelling and into a deployable prediction service.
+This project develops a data and AI solution for that problem, taking the process from raw transaction data through customer-level risk modelling and into a deployable prediction service and AI-assisted customer intelligence layer.
 
 ---
 
 ## Solution
 
-The solution converts historical transaction records into customer-level behavioural features and uses them to estimate inactivity risk.
+The solution converts historical transaction records into customer-level behavioural features, evaluates inactivity risk using multiple machine-learning models, aggregates their predictions, and uses Claude via Amazon Bedrock to explain the resulting assessment.
 
 ```text
 Transaction History
@@ -28,31 +28,38 @@ Data Quality & Cleaning
 Customer Behaviour Features
         │
         ▼
-Inactivity Risk Model
+Multiple Risk Models
         │
         ▼
-Risk Prediction API
+Risk Aggregation
+        │
+        ▼
+Customer Intelligence
+        │
+        ├── Business Rules
+        │
+        └── Claude / Amazon Bedrock
+        │
+        ▼
+FastAPI
         │
         ▼
 Cloud Deployment
-        │
-        ▼
-Future: AI-assisted Customer Intelligence
 ```
 
-The current system provides a foundation for applications such as:
+The system provides a foundation for:
 
 - identifying customers requiring retention attention
 - prioritising customer outreach
 - understanding customer purchasing behaviour
-- supporting customer intelligence workflows
 - providing risk predictions to downstream applications
+- generating business-facing explanations of model outputs
 
 ---
 
 ## Data
 
-The initial implementation uses the **Online Retail** transaction dataset.
+The implementation uses the **Online Retail** transaction dataset.
 
 The raw dataset contains:
 
@@ -68,7 +75,7 @@ The data is transformed from individual transactions into customer-level behavio
 
 ### Data preparation
 
-The initial pipeline addresses issues including:
+The pipeline addresses issues including:
 
 - duplicate transactions
 - missing customer identifiers
@@ -131,27 +138,111 @@ This approach avoids defining inactivity using the same information used to crea
 
 ---
 
-## Model
+## Machine-Learning Models
 
-The current implementation compares Logistic Regression and Random Forest models.
+The system evaluates three classification models:
+
+- Logistic Regression
+- Random Forest
+- Gradient Boosting
+
+Current evaluation results:
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|
 | Logistic Regression | 0.6762 | 0.6242 | 0.6564 | 0.6399 | 0.7353 |
 | Random Forest | 0.6461 | 0.5972 | 0.5911 | 0.5941 | 0.6979 |
+| Gradient Boosting | 0.6566 | 0.6061 | 0.6186 | 0.6122 | 0.7178 |
 
-The current prediction service uses the Logistic Regression model.
+The models are persisted as separate artifacts and used together during prediction.
 
-The model produces:
+### Risk aggregation
 
-- an inactivity-risk classification
-- a probability representing the estimated risk
+Each model produces an inactivity-risk probability.
+
+The current implementation combines the three probabilities using a simple arithmetic mean:
+
+```text
+aggregated risk =
+    (logistic risk
+     + random forest risk
+     + gradient boosting risk)
+    / 3
+```
+
+The aggregated probability is then used to produce the `at_risk` classification.
+
+This is intentionally a simple ensemble rather than a tuned or calibrated stacking system.
+
+---
+
+## Customer Intelligence
+
+The risk model provides a quantitative assessment, while the customer intelligence layer converts that assessment into a business-facing response.
+
+The workflow is:
+
+```text
+Customer Features
+       │
+       ▼
+Three ML Models
+       │
+       ▼
+Aggregated Risk
+       │
+       ▼
+Business Risk Assessment
+       │
+       ▼
+Claude via Amazon Bedrock
+       │
+       ▼
+Business Explanation
+```
+
+The business layer assigns a risk level and recommended action based on the aggregated risk probability.
+
+Claude receives the supplied customer features and model assessment and generates a concise explanation.
+
+The LLM does **not** determine the underlying risk probability.
+
+### Example
+
+For a customer with:
+
+```text
+Recency:            180 days
+Frequency:          2 purchases
+Total Quantity:     30
+Monetary Value:     £120
+Average Order Value: £60
+Unique Products:    5
+Country:            United Kingdom
+```
+
+the system produced:
+
+```text
+Risk probability: 73.8%
+Risk level:       High
+```
+
+with the recommended action:
+
+```text
+Prioritise the customer for retention outreach.
+```
+
+Claude then produced a business-facing explanation grounded in the supplied customer behaviour and model assessment.
+
+See [the demo](docs/demo/README.md) for the complete example.
 
 ---
 
 ## Prediction Service
 
-The model is exposed through a FastAPI service.
+The model and customer intelligence functionality are exposed through FastAPI.
 
 ### Health
 
@@ -187,16 +278,52 @@ Example request:
 }
 ```
 
-Example response:
+The endpoint returns the aggregated risk assessment together with business-facing risk information.
+
+### Customer intelligence
+
+```text
+POST /customer-intelligence
+```
+
+This endpoint runs the complete customer intelligence workflow:
+
+```text
+Customer Features
+        ↓
+ML Risk Models
+        ↓
+Risk Aggregation
+        ↓
+Business Risk Assessment
+        ↓
+Claude / Bedrock
+        ↓
+AI Summary
+```
+
+Example response structure:
 
 ```json
 {
-  "at_risk": 0,
-  "risk_probability": 0.2856
+  "customer": {
+    "Recency": 180,
+    "Frequency": 2,
+    "TotalQuantity": 30,
+    "MonetaryValue": 120,
+    "AverageOrderValue": 60,
+    "UniqueProducts": 5,
+    "Country": "United Kingdom"
+  },
+  "risk_assessment": {
+    "risk_probability": 0.7378,
+    "risk_level": "High",
+    "summary": "Customer shows signs of potential inactivity based on purchasing behaviour."
+  },
+  "recommended_action": "Prioritise the customer for retention outreach.",
+  "ai_summary": "Business-facing explanation generated from the supplied customer data and model assessment."
 }
 ```
-
-The API provides a simple interface for applications or future AI agents to consume the model.
 
 ---
 
@@ -226,7 +353,7 @@ FastAPI
 Customer Risk Prediction
 ```
 
-The current deployment consists of a Fargate service running the prediction container with CloudWatch logging and an HTTP health check.
+The deployment consists of a Fargate service running the prediction container with CloudWatch logging and an HTTP health check.
 
 ### Deployment validation
 
@@ -239,95 +366,7 @@ HTTP 200
 {"status":"ok"}
 ```
 
-Live model inference:
-
-```text
-HTTP 200
-{"at_risk":0,"risk_probability":0.28558297991606035}
-```
-
-This confirms that the trained model is running successfully within the cloud deployment.
-
----
-
-## From Prediction to Customer Intelligence
-
-A risk score is useful, but by itself it does not answer the broader business questions a customer operations team may have.
-
-The next stage is to build an AI-assisted customer intelligence layer around the existing data and model.
-
-The planned workflow is:
-
-```text
-Business Question
-       │
-       ▼
-AI Agent
-       │
-       ├── Customer data
-       │
-       ├── Behaviour analysis
-       │
-       ├── Inactivity risk model
-       │
-       └── Business/project knowledge
-       │
-       ▼
-Customer Intelligence Response
-```
-
-For example, a future user could ask:
-
-> "Which customers appear most at risk, and what purchasing behaviour is contributing to that assessment?"
-
-The agent would be able to combine customer data, behavioural features, and model predictions rather than relying solely on a language model's generated response.
-
----
-
-## System Architecture
-
-The current system separates the major stages of the solution:
-
-```text
-                    ┌──────────────────┐
-                    │  Raw Transactions│
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │ Data Preparation │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │ Feature Pipeline │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │   ML Model       │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │   FastAPI        │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │ Docker / ECR     │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │ ECS / Fargate    │
-                    └────────┬─────────┘
-                             │
-                             ▼
-                    ┌──────────────────┐
-                    │ Prediction API   │
-                    └──────────────────┘
-```
+Live model inference has also been validated successfully through the deployed service.
 
 ---
 
@@ -340,8 +379,11 @@ Current capabilities include:
 - reproducible data preparation
 - automated tests
 - model evaluation
-- persisted model artifact
+- three persisted model artifacts
+- simple model risk aggregation
 - FastAPI inference service
+- customer intelligence workflow
+- Claude via Amazon Bedrock
 - Docker containerisation
 - GitHub Actions CI
 - Amazon ECR
@@ -349,7 +391,7 @@ Current capabilities include:
 - CloudWatch logging
 - container health checks
 
-The repository also contains architecture and decision documentation to record how the solution evolves.
+The repository also contains architecture, decision, and demonstration documentation.
 
 ---
 
@@ -363,12 +405,19 @@ ai-delivery-lab/
 │       ├── evaluation.py
 │       ├── predict.py
 │       ├── api.py
+│       ├── customer_intelligence.py
+│       ├── assistant.py
+│       ├── monitoring.py
+│       ├── risk_aggregation.py
 │       └── pipeline/
 ├── tests/
 ├── data/
 ├── artifacts/
 ├── notebooks/
 ├── docs/
+│   ├── architecture/
+│   ├── decisions/
+│   └── demo/
 ├── infrastructure/
 ├── scripts/
 ├── .github/
@@ -388,9 +437,15 @@ ai-delivery-lab/
 - [x] Transaction cleaning pipeline
 - [x] Customer-level feature engineering
 - [x] Temporal inactivity-risk definition
-- [x] Model training and comparison
-- [x] Persisted prediction model
+- [x] Logistic Regression evaluation
+- [x] Random Forest evaluation
+- [x] Gradient Boosting evaluation
+- [x] Three persisted model artifacts
+- [x] Risk probability aggregation
+- [x] Customer risk assessment
 - [x] FastAPI prediction service
+- [x] Customer intelligence endpoint
+- [x] Claude via Amazon Bedrock
 - [x] Automated tests
 - [x] Docker containerisation
 - [x] GitHub Actions CI
@@ -399,21 +454,20 @@ ai-delivery-lab/
 - [x] CloudWatch logging
 - [x] Live API health validation
 - [x] Live ML inference validation
+- [x] End-to-end customer intelligence demo
 
-### In Progress
+### Future Improvements
 
-- [ ] AI-assisted customer intelligence
-- [ ] Data and ML tools for the AI agent
-- [ ] Project knowledge / RAG
-- [ ] Monitoring and observability
 - [ ] Production deployment hardening
-- [ ] End-to-end architecture documentation
+- [ ] More comprehensive monitoring and observability
+- [ ] Model calibration and ensemble evaluation
+- [ ] Additional customer intelligence capabilities
 
 ---
 
 ## Roadmap
 
-The solution will evolve through several stages:
+The current system establishes a path from transaction data to operational AI-assisted customer intelligence:
 
 ```text
 Customer Transaction Data
@@ -422,16 +476,19 @@ Customer Transaction Data
 Customer Behaviour
           │
           ▼
-Inactivity Risk
+Multiple Risk Models
           │
           ▼
-Operational Prediction API
+Risk Aggregation
           │
           ▼
-AI-assisted Customer Intelligence
+Customer Intelligence
+          │
+          ▼
+AI-assisted Business Explanation
           │
           ▼
 Monitoring & Continuous Improvement
 ```
 
-The objective is to turn historical transaction data into an increasingly useful decision-support capability, while keeping the underlying data, modelling, and operational components traceable and reproducible.
+The objective is to turn historical transaction data into an increasingly useful decision-support capability while keeping the underlying data, modelling, and operational components traceable and reproducible.

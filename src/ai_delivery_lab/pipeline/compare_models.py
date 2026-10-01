@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import joblib
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -7,6 +9,7 @@ from ai_delivery_lab.evaluation import evaluate_classifier
 from ai_delivery_lab.model import (
     CATEGORICAL_FEATURES,
     NUMERIC_FEATURES,
+    build_gradient_boosting_model,
     build_logistic_model,
     build_random_forest_model,
 )
@@ -17,9 +20,14 @@ DATA_PATH = PROJECT_ROOT / "data" / "processed" / "customer_training.csv"
 
 
 def evaluate_model(name, model, X_train, X_test, y_train, y_test):
-    """Train and evaluate a model."""
+    """Train, persist, and evaluate a model."""
 
     model.fit(X_train, y_train)
+
+    artifact_path = PROJECT_ROOT / "artifacts" / (
+        name.lower().replace(" ", "_") + "_model.joblib"
+    )
+    joblib.dump(model, artifact_path)
 
     predictions = model.predict(X_test)
     probabilities = model.predict_proba(X_test)[:, 1]
@@ -59,6 +67,7 @@ def main() -> None:
     models = {
         "Logistic Regression": build_logistic_model(),
         "Random Forest": build_random_forest_model(),
+        "Gradient Boosting": build_gradient_boosting_model(),
     }
 
     results = {}

@@ -46,3 +46,5 @@ mlartifacts/
 artifacts/*
 !artifacts/.gitkeep
 !artifacts/inactivity_risk_model.joblib
+
+infrastructure/aws-config.yaml
