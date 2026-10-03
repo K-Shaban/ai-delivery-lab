@@ -35,12 +35,6 @@ In this example, the customer is identified as **High Risk with an 82% inactivit
 
 The API is designed as an integration layer rather than a standalone user interface. In a production environment, customer data could be processed automatically and the resulting risk assessments integrated into a CRM, retention dashboard or customer engagement workflow.
 
-## Application
-
-<!-- Add application screenshot here -->
-
-![Customer Risk Intelligence App](docs/images/app-screenshot.png)
-
 ## Data
 
 The project uses the UCI Online Retail dataset containing over 500,000 transactions.
