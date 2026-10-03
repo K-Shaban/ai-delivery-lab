@@ -1,50 +1,74 @@
 # Customer Risk Intelligence Pipeline
 
-An end-to-end **machine learning and MLOps application** that predicts customer inactivity risk from transaction data and generates business-facing customer insights.
+End-to-end machine learning and MLOps application for identifying customers at risk of becoming inactive.
 
-## App
+## Overview
 
-<!-- Add app screenshot here -->
+Customer Risk Intelligence Pipeline analyses historical retail transactions and produces customer-level inactivity risk assessments.
+
+The application combines machine learning with a small generative-AI layer:
+
+- Python and pandas process transaction data and engineer customer features.
+- scikit-learn models estimate customer inactivity risk.
+- FastAPI exposes predictions through an API.
+- Claude via Amazon Bedrock generates business-facing customer insights.
+- Docker packages the application.
+- AWS ECS/Fargate provides cloud deployment.
+
+## Application
+
+<!-- Add application screenshot here -->
 
 ![Customer Risk Intelligence App](docs/images/app-screenshot.png)
 
-## Features
+## Data
 
-- Customer inactivity risk prediction
-- Transaction data cleaning and feature engineering
-- Logistic Regression, Random Forest and Gradient Boosting models
-- AI-generated customer insights using Claude
-- FastAPI prediction service
-- Docker containerisation
-- Automated testing and CI/CD
-- AWS ECS/Fargate deployment
+The project uses the UCI Online Retail dataset containing over 500,000 transactions.
 
-## Tech Stack
+Customer features include recency, purchase frequency, monetary value, average order value and product activity.
 
-**Python · pandas · scikit-learn · FastAPI · Docker · GitHub Actions · AWS · Amazon Bedrock · Claude**
+## Modelling
 
-## Dataset
+Three classification models are compared:
 
-Built using the **UCI Online Retail dataset**, containing over 500,000 retail transactions.
+- Logistic Regression
+- Random Forest
+- Gradient Boosting
 
-## Architecture
+Model outputs are used to generate a customer inactivity risk assessment.
 
-```text
-Transaction Data
+## Workflow
+
+```text id="j74m2x"
+Transaction data
       ↓
-Data Processing
+Data processing
       ↓
-Machine Learning
+Feature engineering
       ↓
-Risk Prediction
+Model prediction
       ↓
-AI Customer Insights
+Risk assessment
+      ↓
+AI customer insight
       ↓
 FastAPI
-      ↓
-Docker / AWS
 ```
 
----
+## Key considerations
 
-**Portfolio project demonstrating end-to-end Data Science, MLOps, Generative AI and cloud deployment.**
+- Risk represents customer inactivity rather than guaranteed churn.
+- Predictions depend on historical purchasing behaviour.
+- AI-generated insights explain model outputs but do not determine the underlying risk score.
+
+## Running locally
+
+Install the project dependencies, then run:
+
+```bash
+uvicorn customer_risk_intelligence.api:app --reload
+```
+
+## Stack
+
+Python · pandas · scikit-learn · FastAPI · Docker · GitHub Actions · AWS · Amazon Bedrock · Claude
