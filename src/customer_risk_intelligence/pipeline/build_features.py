@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ai_delivery_lab.pipeline.features import build_customer_features
+from customer_risk_intelligence.pipeline.features import build_customer_features
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from ai_delivery_lab.predict import predict_inactivity_risk
+from customer_risk_intelligence.predict import predict_inactivity_risk
 
 
 def test_predict_inactivity_risk(monkeypatch):
@@ -14,7 +14,7 @@ def test_predict_inactivity_risk(monkeypatch):
             return np.array([[1 - self.probability, self.probability]])
 
     monkeypatch.setattr(
-        "ai_delivery_lab.predict.load_models",
+        "customer_risk_intelligence.predict.load_models",
         lambda: {
             "logistic": FakeModel(0.60),
             "random_forest": FakeModel(0.70),

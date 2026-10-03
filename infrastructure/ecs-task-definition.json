@@ -9,7 +9,7 @@
   "containerDefinitions": [
     {
       "name": "ai-delivery-lab",
-      "image": "200978365775.dkr.ecr.ap-southeast-2.amazonaws.com/ai-delivery-lab:latest",
+      "image": "200978365775.dkr.ecr.ap-southeast-2.amazonaws.com/customer-risk-intelligence-pipeline:latest",
       "essential": true,
       "portMappings": [
         {

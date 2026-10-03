@@ -1,4 +1,4 @@
-from ai_delivery_lab.pipeline.preprocess import (
+from customer_risk_intelligence.pipeline.preprocess import (
     clean_transactions,
     load_data,
     transaction_quality_report,

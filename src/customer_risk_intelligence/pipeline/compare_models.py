@@ -5,8 +5,8 @@ import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from ai_delivery_lab.evaluation import evaluate_classifier
-from ai_delivery_lab.model import (
+from customer_risk_intelligence.evaluation import evaluate_classifier
+from customer_risk_intelligence.model import (
     CATEGORICAL_FEATURES,
     NUMERIC_FEATURES,
     build_gradient_boosting_model,

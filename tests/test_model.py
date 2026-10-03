@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 
-from ai_delivery_lab.model import (
+from customer_risk_intelligence.model import (
     build_logistic_model,
     build_random_forest_model,
 )

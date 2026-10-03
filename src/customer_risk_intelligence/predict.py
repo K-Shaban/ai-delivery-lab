@@ -4,7 +4,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-from ai_delivery_lab.risk_aggregation import aggregate_risk
+from customer_risk_intelligence.risk_aggregation import aggregate_risk
 
 
 ARTIFACTS_DIR = Path(

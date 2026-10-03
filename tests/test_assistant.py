@@ -1,4 +1,4 @@
-from ai_delivery_lab import assistant
+from customer_risk_intelligence import assistant
 
 
 def test_generate_ai_summary_uses_bedrock(monkeypatch):

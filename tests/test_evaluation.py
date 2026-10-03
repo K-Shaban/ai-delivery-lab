@@ -1,4 +1,4 @@
-from ai_delivery_lab.evaluation import evaluate_classifier
+from customer_risk_intelligence.evaluation import evaluate_classifier
 
 
 def test_evaluate_classifier():

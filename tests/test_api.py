@@ -1,7 +1,7 @@
 import numpy as np
 from fastapi.testclient import TestClient
 
-from ai_delivery_lab.api import app
+from customer_risk_intelligence.api import app
 
 
 client = TestClient(app)
@@ -23,7 +23,7 @@ def test_predict(monkeypatch):
             return np.array([[1 - self.probability, self.probability]])
 
     monkeypatch.setattr(
-        "ai_delivery_lab.predict.load_models",
+        "customer_risk_intelligence.predict.load_models",
         lambda: {
             "logistic": FakeModel(0.60),
             "random_forest": FakeModel(0.70),

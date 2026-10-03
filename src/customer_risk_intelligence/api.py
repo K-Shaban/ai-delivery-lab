@@ -4,13 +4,13 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from ai_delivery_lab.assistant import (
+from customer_risk_intelligence.assistant import (
     build_customer_brief,
     generate_ai_summary,
 )
-from ai_delivery_lab.predict import predict_inactivity_risk
-from ai_delivery_lab.customer_intelligence import build_customer_insight
-from ai_delivery_lab.monitoring import log_prediction, prediction_summary
+from customer_risk_intelligence.predict import predict_inactivity_risk
+from customer_risk_intelligence.customer_intelligence import build_customer_insight
+from customer_risk_intelligence.monitoring import log_prediction, prediction_summary
 
 
 app = FastAPI(

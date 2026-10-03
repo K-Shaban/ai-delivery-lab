@@ -57,6 +57,70 @@ The system provides a foundation for:
 
 ---
 
+## Customer Intelligence
+
+The risk model provides a quantitative assessment, while the customer intelligence layer converts that assessment into a business-facing response.
+
+The workflow is:
+
+```text
+Customer Features
+       │
+       ▼
+Three ML Models
+       │
+       ▼
+Aggregated Risk
+       │
+       ▼
+Business Risk Assessment
+       │
+       ▼
+Claude via Amazon Bedrock
+       │
+       ▼
+Business Explanation
+```
+
+The business layer assigns a risk level and recommended action based on the aggregated risk probability.
+
+Claude receives the supplied customer features and model assessment and generates a concise explanation.
+
+The LLM does **not** determine the underlying risk probability.
+
+### Example
+
+For a customer with:
+
+```text
+Recency:            180 days
+Frequency:          2 purchases
+Total Quantity:     30
+Monetary Value:     £120
+Average Order Value: £60
+Unique Products:    5
+Country:            United Kingdom
+```
+
+the system produced:
+
+```text
+Risk probability: 73.8%
+Risk level:       High
+```
+
+with the recommended action:
+
+```text
+Prioritise the customer for retention outreach.
+```
+
+Claude then produced a business-facing explanation grounded in the supplied customer behaviour and model assessment.
+
+See [the demo](docs/demo/README.md) for the complete example.
+
+---
+
 ## Data
 
 The implementation uses the **Online Retail** transaction dataset.
@@ -173,70 +237,6 @@ aggregated risk =
 The aggregated probability is then used to produce the `at_risk` classification.
 
 This is intentionally a simple ensemble rather than a tuned or calibrated stacking system.
-
----
-
-## Customer Intelligence
-
-The risk model provides a quantitative assessment, while the customer intelligence layer converts that assessment into a business-facing response.
-
-The workflow is:
-
-```text
-Customer Features
-       │
-       ▼
-Three ML Models
-       │
-       ▼
-Aggregated Risk
-       │
-       ▼
-Business Risk Assessment
-       │
-       ▼
-Claude via Amazon Bedrock
-       │
-       ▼
-Business Explanation
-```
-
-The business layer assigns a risk level and recommended action based on the aggregated risk probability.
-
-Claude receives the supplied customer features and model assessment and generates a concise explanation.
-
-The LLM does **not** determine the underlying risk probability.
-
-### Example
-
-For a customer with:
-
-```text
-Recency:            180 days
-Frequency:          2 purchases
-Total Quantity:     30
-Monetary Value:     £120
-Average Order Value: £60
-Unique Products:    5
-Country:            United Kingdom
-```
-
-the system produced:
-
-```text
-Risk probability: 73.8%
-Risk level:       High
-```
-
-with the recommended action:
-
-```text
-Prioritise the customer for retention outreach.
-```
-
-Claude then produced a business-facing explanation grounded in the supplied customer behaviour and model assessment.
-
-See [the demo](docs/demo/README.md) for the complete example.
 
 ---
 
@@ -398,9 +398,9 @@ The repository also contains architecture, decision, and demonstration documenta
 ## Project Structure
 
 ```text
-ai-delivery-lab/
+customer-risk-intelligence-pipeline/
 ├── src/
-│   └── ai_delivery_lab/
+│   └── customer_risk_intelligence/
 │       ├── model.py
 │       ├── evaluation.py
 │       ├── predict.py

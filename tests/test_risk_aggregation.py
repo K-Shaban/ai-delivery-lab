@@ -1,5 +1,5 @@
 import pytest
-from ai_delivery_lab.risk_aggregation import aggregate_risk
+from customer_risk_intelligence.risk_aggregation import aggregate_risk
 
 
 def test_aggregate_risk():

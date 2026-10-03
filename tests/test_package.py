@@ -1,4 +1,4 @@
 def test_package_import():
-    import ai_delivery_lab
+    import customer_risk_intelligence
 
-    assert ai_delivery_lab is not None
+    assert customer_risk_intelligence is not None

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ai_delivery_lab.pipeline.preprocess import clean_transactions
+from customer_risk_intelligence.pipeline.preprocess import clean_transactions
 
 
 def test_clean_transactions_removes_duplicates_and_missing_customers():

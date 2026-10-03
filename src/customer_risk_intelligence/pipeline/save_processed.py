@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ai_delivery_lab.pipeline.preprocess import clean_transactions, load_data
+from customer_risk_intelligence.pipeline.preprocess import clean_transactions, load_data
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ai_delivery_lab.pipeline.features import build_customer_features
+from customer_risk_intelligence.pipeline.features import build_customer_features
 
 
 def test_build_customer_features():

@@ -9,7 +9,7 @@
 
 $Region = "ap-southeast-2"
 $AccountId = "200978365775"
-$Repository = "ai-delivery-lab"
+$Repository = "customer-risk-intelligence-pipeline"
 $Cluster = "ai-delivery-lab"
 $Service = "ai-delivery-lab"
 $LogGroup = "/ecs/ai-delivery-lab"

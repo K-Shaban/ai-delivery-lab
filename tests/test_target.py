@@ -1,6 +1,6 @@
 import pandas as pd
 
-from ai_delivery_lab.pipeline.target import build_inactivity_target
+from customer_risk_intelligence.pipeline.target import build_inactivity_target
 
 
 def test_build_inactivity_target():
