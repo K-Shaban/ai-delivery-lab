@@ -37,7 +37,7 @@ The API is designed as an integration layer rather than a standalone user interf
 
 ## Data
 
-The project uses the UCI Online Retail dataset containing over 500,000 transactions.
+The project uses the [UCI Online Retail dataset](https://archive.ics.uci.edu/dataset/352/online+retail) containing over 500,000 transactions.
 
 Customer features include recency, purchase frequency, monetary value, average order value and product activity.
 
