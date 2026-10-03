@@ -93,3 +93,7 @@ uvicorn customer_risk_intelligence.api:app --reload
 ## Stack
 
 Python · pandas · scikit-learn · FastAPI · Docker · GitHub Actions · AWS · Amazon Bedrock · Claude
+
+## Development approach
+
+This project was developed as an AI-assisted learning project to strengthen my practical understanding of the technologies used. AI tools supported areas such as implementation, troubleshooting and iteration, while I used the development process to build hands-on experience with the underlying architecture, workflows and technical decisions.
