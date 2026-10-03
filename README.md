@@ -39,15 +39,22 @@ The API is designed as an integration layer rather than a standalone user interf
 
 The project uses the [UCI Online Retail dataset](https://archive.ics.uci.edu/dataset/352/online+retail) containing over 500,000 transactions.
 
-Customer features include recency, purchase frequency, monetary value, average order value and product activity.
+Customer features calculated using customer activity available up to the **reference date (1 Sep 2011)**, with a **90-day future window** used to determine the inactivity target. This prevents future customer behaviour from leaking into model features.
+
+- **Recency** = Reference Date − Customer's Last Purchase Date
+- **Frequency** = Number of Unique Invoices
+- **Monetary Value** = Σ (Quantity × Unit Price)
+- **Average Order Value** = Monetary Value ÷ Frequency
+- **Product Activity** = Number of Unique Products
+
 
 ## Modelling
 
 Three classification models are compared:
 
-- Logistic Regression
-- Random Forest
-- Gradient Boosting
+- **Logistic Regression** (`max_iter=1000`)
+- **Random Forest** (`n_estimators=200`)
+- **Gradient Boosting** (`n_estimators=100, learning_rate=0.1, max_depth=3`)
 
 Model outputs are used to generate a customer inactivity risk assessment.
 
