@@ -39,13 +39,13 @@ The API is designed as an integration layer rather than a standalone user interf
 
 The project uses the [UCI Online Retail dataset](https://archive.ics.uci.edu/dataset/352/online+retail) containing over 500,000 transactions.
 
-Customer features calculated using customer activity available up to the **reference date (1 Sep 2011)**, with a **90-day future window** used to determine the inactivity target. This prevents future customer behaviour from leaking into model features.
+Customer features were calculated using customer activity available up to the **reference date (1 Sep 2011)**, with a **90-day future window** used to determine the inactivity target. This prevents future customer behaviour from leaking into model features.
 
 - **Recency** = Reference Date − Customer's Last Purchase Date
 - **Frequency** = Number of Unique Invoices
 - **Monetary Value** = Σ (Quantity × Unit Price)
 - **Average Order Value** = Monetary Value ÷ Frequency
-- **Product Activity** = Number of Unique Products
+- **Product Activity** = Number of Unique Products Purchased
 
 
 ## Modelling
